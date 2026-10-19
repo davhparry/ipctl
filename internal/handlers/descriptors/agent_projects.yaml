@@ -1,0 +1,156 @@
+# Copyright 2025 Itential Inc. All Rights Reserved
+# Unauthorized copying of this file, via any medium is strictly prohibited
+# Proprietary and confidential
+---
+get:
+  use: agent-projects
+  group: flow-agent
+
+  description: |
+    Display one or more agent projects.
+
+    The `get agent-projects` command will retrieve all configured agent projects
+    from the FlowAI server and display them in table format by default.  If
+    there are no configured agent projects, the command will return an empty table.
+
+  example: |
+    # Display all configured agent projects
+    $ ipctl get agent-projects
+
+describe:
+  use: agent-project <name>
+  group: flow-agent
+
+  description: |
+    Display details about an agent project.
+
+    The `describe agent-project <name>` command will retrieve the specified
+    agent project from the FlowAI server, if it exists, and display it.
+    If the specified agent project does not exist, this command will return
+    an error.
+
+  example: |
+    # Display details about an agent project called `my-agents`
+    $ ipctl describe agent-project "my-agents"
+
+create:
+  use: agent-project <name>
+  group: flow-agent
+
+  description: |
+    Create a new agent project.
+
+    The `create agent-project` command will create a new empty agent project
+    with the specified name on the server. An optional description can be
+    provided via the `--description` flag. If an agent project with the same
+    name already exists, this command will return an error.
+
+  example: |
+    # Create a new agent project
+    $ ipctl create agent-project "my agent project"
+
+    # Create a new agent project with a description
+    $ ipctl create agent-project "my agent project" --description "A project for my agents"
+
+delete:
+  use: agent-project <name>
+  group: flow-agent
+
+  description: |
+    Delete an agent project.
+
+    Use the `delete agent-project` command to delete an existing agent project
+    from the server. If the specified agent project does not exist on the
+    server, this command will return an error.
+
+  example: |
+    # Delete an agent project named `my agent project`
+    $ ipctl delete agent-project "my agent project"
+
+copy:
+  use: agent-project <name> --from <profile> --to <profile>
+  group: flow-agent
+
+  description: |
+    Copy an agent project from one server to another.
+
+    The copy command can be used to copy an agent project from one Itential
+    Platform server to another.
+
+    The `name` argument specifies the agent project name to copy from the
+    source server to the target. If it does not exist on the source server,
+    the command will return an error.
+
+    The command has two required options, `--from` and `--to`. The `--from`
+    option specifies the name of the ipctl profile that points to the server
+    to copy from. The `--to` option specifies the name of the ipctl profile
+    that points to the server to copy to.
+
+    When the copy operation is performed, the destination server is first
+    checked to see if the agent project already exists. If it does exist,
+    the copy operation will return an error unless `--replace` is specified.
+
+    All member privileges are removed from the project on copy. Use the
+    `--member` option to set permissions on the destination server.
+
+  example: |
+    # Copy an agent project from `ipctl-dev` to `ipctl-staging`
+    $ ipctl copy agent-project "my agent project" --from ipctl-dev --to ipctl-staging
+
+    # Copy and set the group `admins` as owner
+    $ ipctl copy agent-project "my agent project" --from ipctl-dev --to ipctl-staging --member type=group,name=admins,access=owner
+
+clear:
+  use: agent-projects
+  group: flow-agent
+
+  description: |
+    Delete all configured agent projects.
+
+    The `clear agent-projects` command will delete all configured agent projects
+    from the server. This is a destructive command and cannot be undone.
+
+  example: |
+    # Delete all agent projects from the server
+    $ ipctl clear agent-projects
+
+import:
+  use: agent-project <path>
+  group: flow-agent
+
+  description: |
+    Import an agent project.
+
+    The `import agent-project` command will import an agent project bundle
+    into the FlowAI service.  The path argument must point to a JSON file
+    containing an exported agent project bundle.
+
+    If an agent project with the same name already exists on the server,
+    this command will return an error.
+
+  example: |
+    # Import an agent project from a file
+    $ ipctl import agent-project path/to/my-agents.agent-project.json
+
+export:
+  use: agent-project <name>
+  group: flow-agent
+
+  exact_args: 1
+
+  description: |
+    Export an agent project.
+
+    The `export agent-project <name>` command will export the specified agent
+    project bundle from the FlowAI service.  The exported bundle is saved as
+    a JSON file named after the project.
+
+    If a `--path` or `--repository` option is provided, the file will be
+    written to the specified location or committed to the Git repository.
+
+  example: |
+    # Export an agent project to the current directory
+    $ ipctl export agent-project "my-agents"
+
+    # Export an agent project to a specific directory
+    $ ipctl export agent-project "my-agents" --path /tmp/exports
